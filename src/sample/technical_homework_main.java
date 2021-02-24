@@ -17,123 +17,128 @@ import java.util.concurrent.Phaser;
 
 public class technical_homework_main {
 
+    // готовый список
     static List<String> OutFile = Collections.synchronizedList(new ArrayList<String>());
 
-    static boolean S,A,I,D;
+    static boolean S,A,I,D; // виды сортировки
 
     public static void main(String[] args) throws Exception{
-        List<String> FileNameList = new ArrayList<String>();
+        List<String> FileNameList = new ArrayList<String>(); // список имён файлов
 
-        Scanner scanner = new Scanner(System.in);
-        String myOptionsProgramm = scanner.nextLine();  // �������� �� ������ " sort-it.exe -s out.txt in.txt in1.txt in2.txt in3.txt"
+        String myOptionsProgramm=""; // настройки сортировки
+        for (int i=0; i< args.length; i++) {
+            myOptionsProgramm += " " + args[i]; // принимаем в виде аргументов
+        }
 
-        A=true;
-        D=false;
-        I=false;
-        S=true;
+        // виды сортировки
+        A=true; // сортировка по возростанию
+        D=false;// сортировка по убыванию
+        I=false;// сортировка int
+        S=true;// сортировка String
 
         for (int i = 0; i < myOptionsProgramm.length(); i++) {
             if (myOptionsProgramm.charAt(i)=='-'){
-                if (myOptionsProgramm.charAt(i+1)=='a'){ // ���������� �� �����������
+                if (myOptionsProgramm.charAt(i+1)=='a'){ // сортировка по возростанию
                     A=true;
                     D=false;
                 }
-                if (myOptionsProgramm.charAt(i+1)=='i'){ // ���������� int
+                if (myOptionsProgramm.charAt(i+1)=='i'){ // сортировка int
                     I=true;
                     S=false;
                 }
-                if (myOptionsProgramm.charAt(i+1)=='d'){ // ���������� �� ��������
+                if (myOptionsProgramm.charAt(i+1)=='d'){ // сортировка по убыванию
                     A=false;
                     D=true;
                 }
-                if (myOptionsProgramm.charAt(i+1)=='s'){ // ���������� String
+                if (myOptionsProgramm.charAt(i+1)=='s'){ // сортировка String
                     I=false;
                     S=true;
                 }
             }
-            if (myOptionsProgramm.charAt(i)=='.'){ // ���������� String
-                if (myOptionsProgramm.charAt(i+1)=='t'){ // ���������� String
+            if (myOptionsProgramm.charAt(i)=='.'){ // ищем файлы, они начинаются с точки
+                if (myOptionsProgramm.charAt(i+1)=='t'){ // если, это не запускаемый файл и имеет расширение txt, хотя бы начинается t, то:
                     String nameFile ="";
                     int n=i;
                     n--;
-                    while (myOptionsProgramm.charAt(n)!=' '){
-                        nameFile = myOptionsProgramm.charAt(n)+nameFile;
+                    while (myOptionsProgramm.charAt(n)!=' '){ // пока не нашли пробел
+                        nameFile = myOptionsProgramm.charAt(n)+nameFile; // выписываем имя файла посимвольно
                         n--;
                     }
-                    FileNameList.add(nameFile+".txt");
+                    FileNameList.add(nameFile+".txt"); // заисываем имя файла в список файлов
                 }
             }
 
         }
 
-        // ������� ������� �������
-        CountDownLatch countDownLatch = new CountDownLatch(FileNameList.size()-1); // ������� �������
+        // создаем счётчик потоков
+        CountDownLatch countDownLatch = new CountDownLatch(FileNameList.size()-1); // создаем счётчик
 
         for (int i=1; i<FileNameList.size();i++){
-            new InString(FileNameList.get(i), countDownLatch);
+            new InString(FileNameList.get(i), countDownLatch); // запихиваем в цикле, наши файлы в потоки, а так же присваиваем нашим потокам счётчик
         }
 
-        countDownLatch.await(); // ������ �����, ��� ���� ������� ������� �� ���������
+        countDownLatch.await(); // данный поток, ждёт пока счётчик потоков не зоплнится
 
-        if(A==true){
-            OutFile = TrasparentList(OutFile);
+        //------------------------------------------------------------------------------------ЖДЁМ ВЫПОЛНЕНИЯ ПОТОКА------------------------------------------
+
+        if(A==true){ // сортировка по возростанию true
+            OutFile = TrasparentList(OutFile); // разворачиваем наш список в другую сторону
         }
 
+        // запись данных в файл
         try(FileWriter writer = new FileWriter(FileNameList.get(0), false))
         {
-            // ������ ���� ������
-            for (String s : OutFile) {
-                writer.write(s);
-                writer.append('\n');
+            // запись всей строки
+            for (String s : OutFile) { // пока не закончится наш список
+                writer.write(s); // записываем строку
+                writer.append('\n'); // переходим на новую строчку
             }
-            writer.flush();
+            writer.flush(); // перезапись файла
         }
         catch(IOException ex){
-            System.out.println(ex.getMessage());
+            System.out.println(ex.getMessage()); // вывод ошибок при работе с файлом
         }
     }
 
+    // наш с вами поток
     static class InString extends Thread{
-        String FileName;
-        CountDownLatch countDownLatch;
+        String FileName; // файловое имя
+        CountDownLatch countDownLatch; // счётчик
 
         public InString(String FileName, CountDownLatch countDownLatch) {
-            this.FileName = FileName;
-            this.countDownLatch = countDownLatch; // �������� �������
-            start();
+            this.FileName = FileName;// передаем файловое имя
+            this.countDownLatch = countDownLatch; // передаем счётчик
+            start(); // запускаем поток, run()
         }
 
         @Override
         public void run() {
-            // ���������� ���������� �����
+            // построчное считывание файла
             try {
                 File file = new File(FileName);
 
-                //������� ������ FileReader ��� ������� File
+                //создаем объект FileReader для объекта File
                 FileReader fr = new FileReader(file);
 
-                //������� BufferedReader � ������������� FileReader ��� ����������� ����������
+                //создаем BufferedReader с существующего FileReader для построчного считывания
                 BufferedReader reader = new BufferedReader(fr);
 
-                String line;
-                List<String> lines = new ArrayList<String>();
-                while ((line = reader.readLine()) != null) {
-                    if(!line.trim().isEmpty()){
-                        lines = bubbleSort(lines, line); // ��������� ��������� ������ � �����
-                        //System.out.println(line);
+                String line; // берем строку
+                List<String> lines = new ArrayList<String>(); // берем список строк
+
+                while ((line = reader.readLine()) != null) { // пока не закончиться считывания файла
+                    if(!line.trim().isEmpty()){ // проверяем наличие сиволов в выбранной строчке
+                        lines = bubbleSort(lines, line); // зписываем в список, новый список из предыдущего, но уже отсортированный
                     }
                 }
 
-                //for (String s : lines) { System.out.println(Thread.currentThread().getName()+" - "+s);}
-
-                for (String s : lines) {
-                    synchronized (OutFile){
-                        OutFile = bubbleSort(OutFile, s);
-                        OutFile.notify();
+                for (String s : lines) { // пока не закончиться список
+                    synchronized (OutFile){ // синхронизируем список, что бы потоки не теряли данные
+                        OutFile = bubbleSort(OutFile, s); // зписываем в список, новый список из предыдущего, но уже отсортированный
+                        OutFile.notify(); // говорим другому потоку, что мы сделали, то что хотели
                     }
-                    Thread.yield();
-                    Thread.sleep(100);
-                    //System.out.println(Thread.currentThread().getName()+" "+s);
+                    Thread.yield(); // даем возможность выбрать другой поток
+                    Thread.sleep(100); // отправляем спать этот поток, не объязательно, но помогает, лишний раз не сортировать список
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -142,43 +147,43 @@ public class technical_homework_main {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            countDownLatch.countDown(); // ���������� � �������� +1
+            countDownLatch.countDown(); // прибовляем к счётчику +1
         }
     }
 
-    // ������� �����������
-    public static List bubbleSort (List<String> lines, String newString) {
-        boolean sorted = false;
-        String temp;
-        lines.add(newString);
+    // выборка пузырьковым
+    public static List<String> bubbleSort (List<String> lines, String newString) {
+        boolean sorted = false; // наша проверка на сортировку
+        String temp; // временная строка
+        lines.add(newString); // добавляем новую строчку в список
         try {
-            while(!sorted) {
-                sorted = true;
+            while(!sorted) { // пока он не сортрованный
+                sorted = true; // ставим знак, что сортирован
 
-                //��������� �����
+                //сравнение строк
                 for (int i = lines.size()-1; i > 0 ; i--) {
 
-                        //����� 2 ������� � ���������� �� ������� ������
+                        //берем 2 строчки и сравниваем их символы внутри
                         int NumChar1=-1, NumChar2=-1;
                         int n=0;
                         do{
-                            if(S==true){
-                            NumChar1 = Character.getNumericValue(lines.get(i-1).charAt(n));
-                            NumChar2 = Character.getNumericValue(lines.get(i).charAt(n));
+                            if(S==true){ // если сортируем строки
+                            NumChar1 = Character.getNumericValue(lines.get(i-1).charAt(n)); //строка записанная ранее нашей
+                            NumChar2 = Character.getNumericValue(lines.get(i).charAt(n)); // наша строка
                             }
-                            if(I==true){
-                                NumChar1 = Integer.parseInt(lines.get(i-1));
-                                NumChar2 = Integer.parseInt(lines.get(i));
+                            if(I==true){// если сортируем целое число
+                                NumChar1 = Integer.parseInt(lines.get(i-1));//строка записанная ранее нашей
+                                NumChar2 = Integer.parseInt(lines.get(i));// наша строка
                             }
                             n++;
-                        } while ((NumChar1==NumChar2)&&(lines.get(i-1).length()!=n)&&(lines.get(i).length()!=n));
+                        } while ((NumChar1==NumChar2)&&(lines.get(i-1).length()!=n)&&(lines.get(i).length()!=n)); // условия, если совпали символы или значения
 
-                        // �������� ��������, ������� �����������
-                        if (NumChar1 < NumChar2) {
-                            temp = lines.get(i-1);
-                            lines.set(i-1,lines.get(i));
-                            lines.set(i,temp);
-                            sorted = false;
+                        // проверка большего, выборка пузырьковым
+                        if (NumChar1 < NumChar2) { // пока число ранее, меньше нашего
+                            temp = lines.get(i-1); //помешаем выбранную строку во временный
+                            lines.set(i-1,lines.get(i)); // вставляем туда, нашу строчку
+                            lines.set(i,temp); // а в нашу, помещаем временный
+                            sorted = false; // говорим, что не сортирован
                         }
                     }
             }
@@ -187,14 +192,15 @@ public class technical_homework_main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return lines;
+        return lines; // возврашаем отсортированный список
     }
 
-    public static List TrasparentList (List<String> lines) {
-        List<String> list2 = new ArrayList<String>();
-        for (int i = lines.size()-1; i >= 0 ; i--) {
-            list2.add(lines.get(i));
+    // нужен, для того что бы перевернуть список, верх ногами
+    public static List<String> TrasparentList (List<String> lines) {
+        List<String> list2 = new ArrayList<String>(); // создаем список
+        for (int i = lines.size()-1; i >= 0 ; i--) { // пока не переберём все значения списка
+            list2.add(lines.get(i)); // записываем в новый список из старого, но не в том порядке
         }
-        return list2;
+        return list2; // возврашаем отсортированный список
     }
 }
