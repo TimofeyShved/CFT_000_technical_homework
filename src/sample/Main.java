@@ -16,7 +16,7 @@ public class Main extends Application {
         Parent root = loader.load();
         Controller controller = loader.getController();
         //controller.init();
-        primaryStage.setTitle("Shifrotext");
+        primaryStage.setTitle("Сортировка");
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
     }

@@ -22,53 +22,70 @@ public class technical_homework_main {
 
     static boolean S,A,I,D; // виды сортировки
 
+    static class MyOptionsProgramm{
+        String myOptionsProgramm;
+        List<String> FileNameList = new ArrayList<String>(); // список имён файлов
+
+        public MyOptionsProgramm(String myOptionsProgrammString){
+            this.myOptionsProgramm = myOptionsProgrammString;
+        }
+
+        public List<String> MySorted(){
+            // виды сортировки
+            A=true; // сортировка по возростанию
+            D=false;// сортировка по убыванию
+            I=false;// сортировка int
+            S=true;// сортировка String
+
+            for (int i = 0; i < myOptionsProgramm.length(); i++) {
+                if (myOptionsProgramm.charAt(i)=='-'){
+                    if (myOptionsProgramm.charAt(i+1)=='a'){ // сортировка по возростанию
+                        A=true;
+                        D=false;
+                    }
+                    if (myOptionsProgramm.charAt(i+1)=='i'){ // сортировка int
+                        I=true;
+                        S=false;
+                    }
+                    if (myOptionsProgramm.charAt(i+1)=='d'){ // сортировка по убыванию
+                        A=false;
+                        D=true;
+                    }
+                    if (myOptionsProgramm.charAt(i+1)=='s'){ // сортировка String
+                        I=false;
+                        S=true;
+                    }
+                }
+                if (myOptionsProgramm.charAt(i)=='.'){ // ищем файлы, они начинаются с точки
+                    if (myOptionsProgramm.charAt(i+1)=='t'){ // если, это не запускаемый файл и имеет расширение txt, хотя бы начинается t, то:
+                        String nameFile ="";
+                        int n=i;
+                        n--;
+                        while (myOptionsProgramm.charAt(n)!=' '){ // пока не нашли пробел
+                            nameFile = myOptionsProgramm.charAt(n)+nameFile; // выписываем имя файла посимвольно
+                            n--;
+                        }
+                        FileNameList.add(nameFile+".txt"); // заисываем имя файла в список файлов
+                    }
+                }
+
+            }
+            return FileNameList;
+        }
+
+    }
+
     public static void main(String[] args) throws Exception{
         List<String> FileNameList = new ArrayList<String>(); // список имён файлов
 
-        String myOptionsProgramm=""; // настройки сортировки
+        String myOptionsProgrammString=""; // настройки сортировки
         for (int i=0; i< args.length; i++) {
-            myOptionsProgramm += " " + args[i]; // принимаем в виде аргументов
+            myOptionsProgrammString += " " + args[i]; // принимаем в виде аргументов
         }
 
-        // виды сортировки
-        A=true; // сортировка по возростанию
-        D=false;// сортировка по убыванию
-        I=false;// сортировка int
-        S=true;// сортировка String
+        MyOptionsProgramm myOptionsProgramm =new MyOptionsProgramm(myOptionsProgrammString);
+        FileNameList = myOptionsProgramm.MySorted();
 
-        for (int i = 0; i < myOptionsProgramm.length(); i++) {
-            if (myOptionsProgramm.charAt(i)=='-'){
-                if (myOptionsProgramm.charAt(i+1)=='a'){ // сортировка по возростанию
-                    A=true;
-                    D=false;
-                }
-                if (myOptionsProgramm.charAt(i+1)=='i'){ // сортировка int
-                    I=true;
-                    S=false;
-                }
-                if (myOptionsProgramm.charAt(i+1)=='d'){ // сортировка по убыванию
-                    A=false;
-                    D=true;
-                }
-                if (myOptionsProgramm.charAt(i+1)=='s'){ // сортировка String
-                    I=false;
-                    S=true;
-                }
-            }
-            if (myOptionsProgramm.charAt(i)=='.'){ // ищем файлы, они начинаются с точки
-                if (myOptionsProgramm.charAt(i+1)=='t'){ // если, это не запускаемый файл и имеет расширение txt, хотя бы начинается t, то:
-                    String nameFile ="";
-                    int n=i;
-                    n--;
-                    while (myOptionsProgramm.charAt(n)!=' '){ // пока не нашли пробел
-                        nameFile = myOptionsProgramm.charAt(n)+nameFile; // выписываем имя файла посимвольно
-                        n--;
-                    }
-                    FileNameList.add(nameFile+".txt"); // заисываем имя файла в список файлов
-                }
-            }
-
-        }
 
         // создаем счётчик потоков
         CountDownLatch countDownLatch = new CountDownLatch(FileNameList.size()-1); // создаем счётчик
