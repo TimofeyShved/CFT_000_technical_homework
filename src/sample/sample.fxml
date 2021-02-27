@@ -9,7 +9,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
-        <Label text="Название файлов и аргументы (можно через запитую): " />
+        <Label text="Название файлов и аргументы (можно через запитую и пробелы* обязательны): " />
         <TextField fx:id="inNameFile"  prefWidth="400.0" />
         <Label text="Например: -i -d in1.txt in2.txt in3.txt " />
         <Label text="Режим сортировки:" />

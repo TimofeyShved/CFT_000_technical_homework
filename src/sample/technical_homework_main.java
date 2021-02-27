@@ -30,6 +30,7 @@ public class technical_homework_main {
             this.myOptionsProgramm = myOptionsProgrammString;
         }
 
+        //------------------------------------------------------------------------------------Вид сортировки------------------------------------------------------------------
         public List<String> MySorted(){
             // виды сортировки
             A=true; // сортировка по возростанию
@@ -75,6 +76,7 @@ public class technical_homework_main {
 
     }
 
+    //------------------------------------------------------------------------------------Основной код------------------------------------------------------------------
     public static void main(String[] args) throws Exception{
         List<String> FileNameList = new ArrayList<String>(); // список имён файлов
 
@@ -96,7 +98,7 @@ public class technical_homework_main {
 
         countDownLatch.await(); // данный поток, ждёт пока счётчик потоков не зоплнится
 
-        //------------------------------------------------------------------------------------ЖДЁМ ВЫПОЛНЕНИЯ ПОТОКА------------------------------------------
+        //-------------------------ЖДЁМ ВЫПОЛНЕНИЯ ПОТОКА------------------------------------------
 
         if(A==true){ // сортировка по возростанию true
             OutFile = TrasparentList(OutFile); // разворачиваем наш список в другую сторону
@@ -117,6 +119,7 @@ public class technical_homework_main {
         }
     }
 
+    //------------------------------------------------------------------------------------ПОТОК------------------------------------------------------------------
     // наш с вами поток
     static class InString extends Thread{
         String FileName; // файловое имя
@@ -168,6 +171,7 @@ public class technical_homework_main {
         }
     }
 
+    //------------------------------------------------------------------------------------Сортировка------------------------------------------------------------------
     // выборка пузырьковым
     public static List<String> bubbleSort (List<String> lines, String newString) {
         boolean sorted = false; // наша проверка на сортировку
@@ -179,7 +183,6 @@ public class technical_homework_main {
 
                 //сравнение строк
                 for (int i = lines.size()-1; i > 0 ; i--) {
-
                         //берем 2 строчки и сравниваем их символы внутри
                         int NumChar1=-1, NumChar2=-1;
                         int n=0;
@@ -202,7 +205,7 @@ public class technical_homework_main {
                             lines.set(i,temp); // а в нашу, помещаем временный
                             sorted = false; // говорим, что не сортирован
                         }
-                    }
+                }
             }
         } catch (StringIndexOutOfBoundsException e) {
             e.printStackTrace();
@@ -212,6 +215,7 @@ public class technical_homework_main {
         return lines; // возврашаем отсортированный список
     }
 
+    //------------------------------------------------------------------------------------Ньюансы------------------------------------------------------------------
     // нужен, для того что бы перевернуть список, верх ногами
     public static List<String> TrasparentList (List<String> lines) {
         List<String> list2 = new ArrayList<String>(); // создаем список
@@ -219,5 +223,13 @@ public class technical_homework_main {
             list2.add(lines.get(i)); // записываем в новый список из старого, но не в том порядке
         }
         return list2; // возврашаем отсортированный список
+    }
+
+    public static String toString(List<String> lines){
+        String myNewString="";
+        for (String s : lines) { // пока не переберём все значения списка
+            myNewString+=s+"|"; // записываем в новый String из старого списка
+        }
+        return myNewString; // возврашаем String
     }
 }

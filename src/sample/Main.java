@@ -12,13 +12,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("sample.fxml"));
+        loader.setLocation(getClass().getResource("sample.fxml")); // загрузка xml, разметка для нашего визуального проекта
         Parent root = loader.load();
-        Controller controller = loader.getController();
+        Controller controller = loader.getController(); // наш код с действиями
         //controller.init();
-        primaryStage.setTitle("Сортировка");
-        primaryStage.setScene(new Scene(root, 600, 400));
-        primaryStage.show();
+        primaryStage.setTitle("Сортировка"); // имя окна(сцена)
+        primaryStage.setScene(new Scene(root, 600, 400)); // размеры окна
+        primaryStage.show(); // отобразить окно
     }
 
 

@@ -27,44 +27,50 @@ public class Controller {
     static List<String> FileNameList = new ArrayList<String>(); // список имён файлов
     static String myOptionsProgrammString;
 
-    protected int sh=0;
+    //------------------------------------------------------------------------------------Загрузка------------------------------------------------------------------
     @FXML
     public void load(MouseEvent mouseEvent) {
-        myOptionsProgrammString=inNameFile.getText();
-        System.out.println(myOptionsProgrammString);
-        FileNameList = new ArrayList<String>();
+        myOptionsProgrammString=inNameFile.getText(); // получаем строчку с настройками и именем файлов. Например: -i -d in1.txt in2.txt in3.txt
+        FileNameList = new ArrayList<String>(); // передаем его в список
+
         status.setText("загружен.");
     }
 
+    //------------------------------------------------------------------------------------Обработка------------------------------------------------------------------
     @FXML
     public void start(MouseEvent mouseEvent) throws Exception {
-        technical_homework_main.OutFile = Collections.synchronizedList(new ArrayList<String>());
+        technical_homework_main.OutFile = Collections.synchronizedList(new ArrayList<String>()); // обнуляем итоговый список
+
+        // закидываем в статический класс наши опции-настройки, имена файлов
         technical_homework_main.MyOptionsProgramm myOptionsProgramm = new technical_homework_main.MyOptionsProgramm(myOptionsProgrammString);
-        FileNameList = myOptionsProgramm.MySorted();
+        FileNameList = myOptionsProgramm.MySorted(); // сортируем наши файлы
 
         // создаем счётчик потоков
         CountDownLatch countDownLatch = new CountDownLatch(FileNameList.size()); // создаем счётчик
 
         for (int i=0; i<FileNameList.size();i++){
-            new technical_homework_main.InString(FileNameList.get(i), countDownLatch); // запихиваем в цикле, наши файлы в потоки, а так же присваиваем нашим потокам счётчик
+            // запихиваем в цикле, наши файлы в потоки, а так же присваиваем нашим потокам счётчик
+            new technical_homework_main.InString(FileNameList.get(i), countDownLatch);
         }
 
         countDownLatch.await(); // данный поток, ждёт пока счётчик потоков не зоплнится
 
-        //------------------------------------------------------------------------------------ЖДЁМ ВЫПОЛНЕНИЯ ПОТОКА------------------------------------------
+        //--------------------------------------ЖДЁМ ВЫПОЛНЕНИЯ ВСЕХ ПОТОКОВ------------------------------------------
 
         if(technical_homework_main.A==true){ // сортировка по возростанию true
-            technical_homework_main.OutFile = technical_homework_main.TrasparentList(technical_homework_main.OutFile); // разворачиваем наш список в другую сторону
+            // тогда разворачиваем наш список в другую сторону
+            technical_homework_main.OutFile = technical_homework_main.TrasparentList(technical_homework_main.OutFile);
         }
 
-        outNameFileMemo.setText("");
+        outNameFileMemo.setText(""); // обнуляем поле МЕМО
 
-        for (String s : technical_homework_main.OutFile){
+        for (String s : technical_homework_main.OutFile){ // закидываем в него полученный файл, для визуальной состовляющей программы
             outNameFileMemo.appendText(s+"\n");
         }
         status.setText("обработан.");
     }
 
+    //------------------------------------------------------------------------------------Сохранение------------------------------------------------------------------
     @FXML
     public void save(MouseEvent mouseEvent) {
         status.setText("нет действий.");
